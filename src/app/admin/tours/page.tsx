@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Swal from 'sweetalert2';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 type Tour = {
   id: number;
@@ -20,13 +20,13 @@ export default function ToursPage() {
 
   async function fetchTours() {
     try {
-      const res = await fetch('/api/admin/tours', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Error al obtener los tours');
+      const res = await fetch("/api/admin/tours", { cache: "no-store" });
+      if (!res.ok) throw new Error("Error al obtener los tours");
       const data = await res.json();
       setTours(data);
     } catch (err) {
       console.error(err);
-      Swal.fire('Error', 'No se pudieron cargar los tours', 'error');
+      Swal.fire("Error", "No se pudieron cargar los tours", "error");
     }
   }
 
@@ -36,28 +36,28 @@ export default function ToursPage() {
 
   const handleDelete = async (id: number) => {
     const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: '¡No podrás revertir esto!',
-      icon: 'warning',
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
     });
 
     if (result.isConfirmed) {
       setLoading(true);
       try {
         const res = await fetch(`/api/admin/tours/${id}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
-        if (!res.ok) throw new Error('Error al eliminar');
+        if (!res.ok) throw new Error("Error al eliminar");
         setTours((prev) => prev?.filter((t) => t.id !== id) || []);
-        Swal.fire('Eliminado', 'El tour ha sido eliminado', 'success');
+        Swal.fire("Eliminado", "El tour ha sido eliminado", "success");
       } catch (err) {
         console.error(err);
-        Swal.fire('Error', 'No se pudo eliminar el tour', 'error');
+        Swal.fire("Error", "No se pudo eliminar el tour", "error");
       } finally {
         setLoading(false);
       }
@@ -66,7 +66,6 @@ export default function ToursPage() {
 
   return (
     <section className="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
-      
       <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-blue-700 mb-4 sm:mb-0">
           Gestión de Tours
@@ -79,7 +78,7 @@ export default function ToursPage() {
             + Nuevo Tour
           </Link>
           <button
-            onClick={() => router.push('/admin')}
+            onClick={() => router.push("/admin")}
             className="bg-gray-200 hover:bg-gray-300 hover:cursor-pointer text-gray-700 font-medium px-5 py-2.5 rounded-lg transition-colors duration-200"
           >
             Volver
@@ -94,7 +93,6 @@ export default function ToursPage() {
           <p>No hay tours disponibles aún.</p>
         </div>
       ) : (
-
         <div className="overflow-x-auto">
           <div className="max-h-[68vh] overflow-y-auto">
             <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden text-left text-gray-700">
@@ -103,7 +101,9 @@ export default function ToursPage() {
                   <th className="px-4 py-3 font-semibold">Título</th>
                   <th className="px-4 py-3 font-semibold">Precio</th>
                   <th className="px-4 py-3 font-semibold">Cupos</th>
-                  <th className="px-4 py-3 font-semibold text-center">Acciones</th>
+                  <th className="px-4 py-3 font-semibold text-center">
+                    Acciones
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -113,7 +113,7 @@ export default function ToursPage() {
                     className="border-t hover:bg-gray-50 transition-colors duration-200"
                   >
                     <td className="px-4 py-3">{t.title}</td>
-                    <td className="px-4 py-3">${t.price.toFixed(2)}</td>
+                    <td className="px-4 py-3">${t.price.toLocaleString()}</td>
                     <td className="px-4 py-3">
                       {t.availableSpots}/{t.capacity}
                     </td>
@@ -127,7 +127,7 @@ export default function ToursPage() {
                       <button
                         disabled={loading}
                         onClick={() => handleDelete(t.id)}
-                        className="text-red-600 hover:text-red-800 font-medium hover:cursor-pointer"  
+                        className="text-red-600 hover:text-red-800 font-medium hover:cursor-pointer"
                       >
                         Eliminar
                       </button>

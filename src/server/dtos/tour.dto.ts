@@ -7,4 +7,4 @@ export interface CrearTourDTO {
   imageUrl: string;
 }
 
-export interface UpdateTourDTO extends Partial<CrearTourDTO> {}
+export type UpdateTourDTO = Partial<CrearTourDTO>;

@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
+
 type Filters = { ticketId?: number; cedula?: string };
+
 export const TicketRepository = {
-    findAll: (filters?: Filters) => {
-    const where: any = {};
+  findAll: (filters?: Filters) => {
+
+    const where: Prisma.TicketWhereInput = {};
 
     if (filters?.ticketId) {
       const id = Number(filters.ticketId);
@@ -20,7 +24,8 @@ export const TicketRepository = {
     });
   },
 
-    findById: (id: number) => prisma.ticket.findUnique({ where: { id } }),
-    create: (data: { userId: number; tourId: number; quantity: number; total: number }) =>
+  findById: (id: number) => prisma.ticket.findUnique({ where: { id } }),
+
+  create: (data: { userId: number; tourId: number; quantity: number; total: number }) =>
     prisma.ticket.create({ data }),
 };

@@ -23,7 +23,11 @@ export default function HomePage() {
         const res = await fetch("/api/admin/tours");
         if (!res.ok) throw new Error("Error al obtener tours");
         const data = await res.json();
-        setTours(data);
+        setTours(
+          Array.isArray(data)
+            ? data.filter((t: Tour) => t.availableSpots > 0)
+            : []
+        );
       } catch (err) {
         console.error(err);
       } finally {
@@ -34,7 +38,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <section className="py-16 bg-gray-50 min-h-screen">
+    <section className="py-16 bg-gray-50 ">
       <div className="text-center mb-10">
         <h1 className="text-4xl font-bold mb-4 text-blue-700">
           Descubre y reserva tus tours favoritos 🌍
@@ -55,7 +59,7 @@ export default function HomePage() {
           No hay tours disponibles actualmente.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 lg:px-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 lg:px-1">
           {tours.map((tour) => (
             <div
               key={tour.id}

@@ -4,7 +4,6 @@ import { Ticket, History } from "lucide-react";
 export default function AdminPage() {
   return (
     <section className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6">
-
       <div className="mb-12">
         <h1 className="text-4xl font-bold text-blue-700 mb-3">
           Panel Administrativo
@@ -16,7 +15,6 @@ export default function AdminPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-4xl">
-
         <Link
           href="/admin/tours"
           className="group bg-white border border-gray-200 rounded-2xl p-8 flex flex-col items-center text-center shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300"
@@ -31,16 +29,18 @@ export default function AdminPage() {
             Crea, edita y elimina los tours disponibles para los usuarios.
           </p>
         </Link>
-
-        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 flex flex-col items-center justify-center text-gray-400 shadow-inner select-none">
-          <div className="bg-gray-200 text-gray-400 rounded-full p-4 mb-4">
+        <Link
+          href="/admin/history"
+          className="group bg-white border border-gray-200 rounded-2xl p-8 flex flex-col items-center text-center shadow-sm hover:shadow-md hover:border-green-300 transition-all duration-300"
+        >
+          <div className="bg-green-50 text-green-600 rounded-full p-4 mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
             <History size={42} />
           </div>
-          <h2 className="text-xl font-semibold mb-2">
-            Historial de Compras
-          </h2>
-          <p className="text-gray-400 text-sm">Disponible próximamente</p>
-        </div>
+          <h2 className="text-xl font-semibold mb-2">Historial de Compras</h2>
+          <p className="text-gray-400 text-sm">
+            Consulta el historial de compras de los usuarios.
+          </p>
+        </Link>
       </div>
     </section>
   );

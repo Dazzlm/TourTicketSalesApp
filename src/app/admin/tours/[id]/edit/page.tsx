@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-
+import LoadingSpinner from "@/components/LoadingSpinner";
 type TourForm = {
   title: string;
   description: string;
@@ -21,6 +21,7 @@ export default function EditTourPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [redirecting, setRedirecting] = useState(false);
 
   const {
     register,
@@ -71,6 +72,12 @@ export default function EditTourPage() {
       fetch(`/api/admin/tours/${id}`)
         .then((res) => res.json())
         .then((data) => {
+          if (!data?.id) {
+            setRedirecting(true);
+            router.push("/not-found");
+            return;
+          }
+
           reset({
             title: data.title,
             description: data.description,
@@ -80,8 +87,14 @@ export default function EditTourPage() {
           });
           setPreview(data.imageUrl || null);
         })
-        .catch((err) => console.error("Error al cargar el tour:", err))
+        .catch((err) => {
+          console.error("Error al cargar el tour:", err);
+        })
         .finally(() => setLoading(false));
+    } else {
+      setRedirecting(true);
+      router.push("/not-found");
+      setLoading(false);
     }
   }, [id, reset]);
 
@@ -108,13 +121,8 @@ export default function EditTourPage() {
     router.push("/admin/tours");
   };
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center min-h-[60vh] text-gray-500">
-        Cargando datos del tour...
-      </div>
-    );
-
+  if (loading) return <LoadingSpinner />;
+  if (redirecting) return null;
   return (
     <section className="max-w-3xl mx-auto bg-white shadow-sm rounded-2xl p-8 border border-gray-200">
       <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">

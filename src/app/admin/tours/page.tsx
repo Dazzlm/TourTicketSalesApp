@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 type Tour = {
   id: number;
@@ -87,7 +88,7 @@ export default function ToursPage() {
       </div>
 
       {tours === null ? (
-        <p className="text-center py-12 text-gray-500">Cargando...</p>
+        <LoadingSpinner />
       ) : tours.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <p>No hay tours disponibles aún.</p>

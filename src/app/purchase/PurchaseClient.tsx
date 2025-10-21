@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { swal } from "@/utils/swal";
 import PurchaseSummary from "@/components/PurchaseSummary";
 import BuyerForm from "@/components/BuyerForm";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 type Tour = {
   id: number;
@@ -46,24 +47,35 @@ export default function PurchaseClient() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [quantity] = useState(quantityFromQuery || 1);
 
   const setForm = (patch: Partial<Form>) =>
     setFormState((s) => ({ ...s, ...patch }));
 
   useEffect(() => {
-    if (!tourId) return;
+    setLoading(true);
+    if (isNaN(tourId)) {
+      setRedirecting(true);
+      router.replace("/not-found");
+      return;
+    }
     const load = async () => {
       setFetchingTour(true);
       try {
         const res = await fetch(`/api/tours/${tourId}`);
-        if (!res.ok) throw new Error("No se pudo obtener el tour");
+        if (!res.ok) {
+          setRedirecting(true);
+          router.replace("/not-found");
+          throw new Error("No se pudo obtener el tour");
+        }
         const data = await res.json();
         setTour(data);
       } catch (err) {
         console.error(err);
       } finally {
         setFetchingTour(false);
+        setLoading(false);
       }
     };
     load();
@@ -228,6 +240,9 @@ export default function PurchaseClient() {
   const canPay = Boolean(
     !loading && form.cedula.trim() !== "" && user && typeof user === "object"
   );
+
+  if (loading) return <LoadingSpinner />;
+  if (redirecting || !tour) return null;
 
   return (
     <main className="min-h-screen bg-slate-50 py-12">

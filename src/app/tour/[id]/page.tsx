@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 type Tour = {
   id: number;
@@ -18,6 +19,7 @@ export default function TourDetailPage() {
   const id = params?.id as string | undefined;
   const [tour, setTour] = useState<Tour | null>(null);
   const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
 
@@ -30,7 +32,12 @@ export default function TourDetailPage() {
     const fetchTour = async () => {
       try {
         const res = await fetch(`/api/tours/${id}`);
-        if (!res.ok) throw new Error("Tour no encontrado");
+        if (!res.ok) {
+          setLoading(false);
+          setRedirecting(true);
+          router.replace("/not-found");
+          throw new Error("Tour no encontrado");
+        }
         const data = await res.json();
         setTour(data);
         setQuantity(data.availableSpots > 0 ? 1 : 0);
@@ -43,9 +50,8 @@ export default function TourDetailPage() {
     fetchTour();
   }, [id]);
 
-  if (loading) return <p className="text-center mt-10">Cargando...</p>;
-  if (!id) return <p className="text-center mt-10">ID inválido</p>;
-  if (!tour) return <p className="text-center mt-10">Tour no encontrado</p>;
+  if (loading) return <LoadingSpinner />;
+  if (redirecting || !tour) return null;
 
   const total = +(tour.price * quantity).toFixed(2);
 

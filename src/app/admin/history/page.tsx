@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 type TicketRow = {
   idTicker: number;
@@ -118,7 +119,7 @@ export default function AdminHistorialPage() {
       </div>
 
       {tickets === null ? (
-        <p className="text-center py-12 text-gray-500">Cargando...</p>
+        <LoadingSpinner />
       ) : tickets.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <p>No hay registros.</p>

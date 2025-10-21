@@ -1,47 +1,34 @@
 # TourTicketSalesApp
 
-Aplicación full‑stack para la gestión y venta de tiquetes de tours. Incluye panel administrativo para CRUD de tours, compra con validación de cupos, búsqueda/creación de usuarios y registro de tickets. Construida con Next.js App Router, Prisma y PostgreSQL. Carga de imágenes en Cloudinary y UI con Tailwind.
+Aplicación full-stack para gestionar y vender tiquetes de tours.
+Incluye una landing para los usuarios y un panel administrativo para manejar tours, usuarios y tickets.
 
-## Características
+## Funcionalidades principales
 
-- Landing de tours con filtrado por cupos disponibles.
-- Detalle del tour con control de cantidad y cálculo de total.
-- Flujo de compra con:
-  - Búsqueda de usuario por cédula.
-  - Creación de usuario si no existe.
-  - Confirmación de compra y creación de ticket.
-  - Descuento automático de cupos del tour.
+- Listado de tours con filtrado por cupos disponibles.
+- Detalle del tour con selección de cantidad y cálculo automático del total.
+- Proceso de compra:
+  - Buscar usuario por cédula o crear uno nuevo.
+  - Confirmar la compra y generar el ticket.
+  - Descuento automático de cupos.
 - Panel Admin:
-  - Listado, creación, edición y eliminación de tours.
-  - Historial de compras de tickets.
-- Subida de imágenes a Cloudinary con validaciones (tipo/size).
-- API modular con controlador/servicio/repositorio/DTOs.
-- Prisma para ORM y migraciones. PostgreSQL como base de datos.
-- SweetAlert2 para confirmaciones y feedback.
+  - Crear, editar y eliminar tours.
+  - Ver historial de compras.
+- Subida de imágenes a Cloudinary con validaciones.
 
 ## Stack técnico
 
-- Next.js 15 (App Router) + React 19
-- TypeScript 5, ESLint 9, Tailwind CSS 4
-- Prisma 6, PostgreSQL
-- Cloudinary (carga de imágenes)
-- SweetAlert2, react-hook-form, lucide-react
+- Frontend: Next.js (App Router), React, Tailwind CSS
+- Backend: Prisma + PostgreSQL
+- Otros: Cloudinary, SweetAlert2, react-hook-form,
 
-## Reglas/validaciones clave
+## Validaciones principales
 
-- availableSpots no puede superar capacity (al crear/actualizar tour).
-- Al crear ticket:
-  - Debe existir el tour y tener suficientes cupos.
-  - Se calcula total.
-  - Se descuenta availableSpots = availableSpots - quantity.
-- Carga de imagen sólo si el archivo es image/\* y <= 25MB.
-
-## Decisiones de arquitectura
-
-- Capas separadas: Controller -> Service -> Repository -> Prisma. Los DTOs tipan entradas/salidas y AppError centraliza errores operacionales.
-- Uso de Cloudinary para evitar servir y gestionar archivos en el servidor. Se sube mediante upload_stream con streamifier.
-- En UI se usa SweetAlert2 para confirmaciones/feedback. En formularios se emplea react-hook-form para validación y manejo de estado.
-- App Router de Next.js con handlers por carpeta para mantener proximidad entre UI y API.
+- Los cupos disponibles no pueden superar la capacidad total.
+- Al crear un ticket:
+  - Se valida que el tour exista y tenga cupos suficientes.
+  - Se calcula el total y se descuentan los cupos.
+- Solo se permiten imágenes tipo `image/*` y tamaño ≤ 25MB.
 
 ## Requisitos previos
 
@@ -51,7 +38,7 @@ Aplicación full‑stack para la gestión y venta de tiquetes de tours. Incluye 
 
 ## Variables de entorno
 
-Crea un archivo `.env` en la raíz con:
+Crear un archivo `.env` en la raíz con:
 
 ```
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB?schema=public"
@@ -60,74 +47,45 @@ CLOUDINARY_API_KEY="tu_api_key"
 CLOUDINARY_API_SECRET="tu_api_secret"
 ```
 
-## Guía rápida (Windows/PowerShell)
+---
 
-Paso 0 — (comprobaciones)
+## Instalación y ejecución
 
-- Node 18 o 20 instalado: `node -v`
-- Base de datos (puerto, usuario, password)
-- Cuenta de Cloudinary con clave secreta
-
-Paso 1 — Clonar e instalar
-
-```powershell
+```bash
+# Clonar el proyecto
 git clone https://github.com/Dazzlm/TourTicketSalesApp.git
 cd TourTicketSalesApp
-```
 
-```powershell
+# Instalar dependencias
 npm install
 ```
 
-Paso 2 — Configurar variables de entorno
-Crea `.env` en la raíz con:
+Configura el archivo `.env`, luego ejecuta:
 
-```dotenv
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB?schema=public"
-CLOUDINARY_CLOUD_NAME="tu_cloud_name"
-CLOUDINARY_API_KEY="tu_api_key"
-CLOUDINARY_API_SECRET="tu_api_secret"
-```
-
-Paso 3 — Preparar Prisma y base de datos
-
-```powershell
+```bash
+# Preparar Prisma y base de datos
 npx prisma generate
-npx prisma migrate deploy
-```
-
-```powershell
 npx prisma migrate dev --name init
-```
 
-Paso 4 — Ejecutar en desarrollo
-
-```powershell
+# Iniciar entorno de desarrollo
 npm run dev
 ```
 
-Paso 5 — Verificar
+La app quedará disponible en:  
+http://localhost:3000
 
-- App: http://localhost:3000
-- Admin tours: http://localhost:3000/admin/tours
-- Crear un tour en /admin/tours/new (necesita Cloudinary)
+---
 
-## Scripts disponibles
+## Rutas principales
 
-- dev: `next dev --turbopack`
-- build: `next build --turbopack`
-- start: `next start`
-- lint: `eslint`
+| Ruta               | Descripción                              |
+| ------------------ | ---------------------------------------- |
+| `/`                | Listado de tours disponibles             |
+| `/tour/[id]`       | Detalle del tour y selección de cantidad |
+| `/admin/tours`     | Panel de administración de tours         |
+| `/admin/tours/new` | Crear un nuevo tour                      |
 
-## Endpoints (resumen)
-
-- GET `/api/admin/tours` → Lista de tours (admin) [TourController.list]
-- POST `/api/admin/tours` → Crear tour (multipart/form-data con image) [TourController.create]
-- GET `/api/admin/tours/:id` → Obtener tour por id [TourController.get]
-- PUT `/api/admin/tours/:id` → Actualizar tour (multipart/form-data opcional image) [TourController.update]
-- DELETE `/api/admin/tours/:id` → Eliminar tour [TourController.remove]
-- GET `/api/tours/:id` → Obtener tour público por id
-- POST `/api/tickets/new` → Crear ticket { tourId, quantity, cedula, name?, email?, total? }
+---
 
 ## Flujos de UI
 
@@ -146,81 +104,71 @@ Paso 5 — Verificar
 - lucide-react para íconos.
 - SweetAlert2 para modales.
 
-## Notas y decisiones específicas
+# Decisiones tomadas
 
-- Precio maneja Decimal en BD pero en el cliente se trata como número. En el servicio de tickets se normaliza a 2 decimales para el total.
-- availableSpots se valida en servicios y también en formularios del cliente para mejorar UX, pero la fuente de verdad está en el backend.
-- Carga de imágenes al crear/editar tour: si no se adjunta imagen en edición, se conserva la existente.
-- La carpeta `public/uploads/` quedó disponible por si en un futuro se desea almacenamiento local, pero actualmente se usa Cloudinary.
+Durante el desarrollo tomé varias decisiones técnicas buscando un balance entre orden, rendimiento y claridad en el código.
 
-## Error comun
+### Estructura y arquitectura
 
-- Error al iniciar `npm run dev`:
-  - Verifica que `.env` tenga `DATABASE_URL` válido y que la BD esté accesible.
-  - Ejecuta `npx prisma generate` y `npx prisma migrate deploy`.
-  - Asegúrate de tener variables de Cloudinary si vas a crear/editar tours con imagen.
+- **Next.js App Router:** lo usé para mantener la UI y los handlers de la API juntos por ruta, lo que facilita el mantenimiento y la ubicacion por carpetas.
+- **Capas separadas (Controller → Service → Repository → Prisma):** ayuda a mantener una separación clara de responsabilidades y facilita el entendimiento y depuración.
 
-## Decisiones
+### Base de datos y ORM
 
-Estas son las decisiones más relevantes.
+- **Prisma + PostgreSQL:** Prisma ofrece tipado fuerte y migraciones rápidas e investigando encontre que era la mas usada; PostgreSQL por ser una de las base de datos que uso, ademas Neon emplea el mismo motor y ofrece almacenamiento persistente externo, que es lo necesario para Vercel que no maneja volúmenes locales.
+- **Campos `price` y `total` como Decimal:** evita errores de punto flotante al manejar dinero.
 
-## Enrutamiento y estructura
+### Manejo de imágenes
 
-- App Router de Next.js: permite co-localizar UI y handlers de API por ruta. Esto mejora el mantenimiento al tener UI y endpoint cerca (por ejemplo, `src/app/admin/tours` y `src/app/api/admin/tours`).
-- Capas en backend (Controller → Service → Repository): separa responsabilidades. Los controllers orquestan HTTP/NextResponse, los services contienen reglas de negocio (validaciones, flujos), y los repositories interactúan con Prisma. Esto facilita pruebas y evita mezclar HTTP con lógica de dominio.
-- DTOs: los tipos en `src/server/dtos` documentan contratos de entrada/salida y endurecen el tipado con TypeScript estricto.
-- Manejo de errores con `AppError`: centraliza errores operacionales con `status` y `message`. Los controllers traducen a respuestas HTTP.
+- **Cloudinary:** lo elegí para manejar las imágenes externamente, ya que en producción no podría servir archivos desde el servidor. Así evito problemas de almacenamiento y simplifico el despliegue.
+- **Subida por stream (`upload_stream` + `streamifier`):** reduce el uso de memoria.
+- **`public/uploads/`:** se mantiene porque contiene imágenes usadas durante el desarrollo y podría servir como opción futura para almacenamiento local.
 
-## Gestión de datos y Prisma
+### Edición de imágenes
 
-- PostgreSQL + Prisma: PostgreSQL es robusto para integridad (FKs, cascadas) y Prisma acelera productividad con tipado e introspección.
-- PrismaClient singleton (`src/lib/prisma.ts`): evita crear múltiples conexiones en desarrollo (hot reload) y reduce fugas. Se activa logging de queries en dev para depurar.
-- Tipos numéricos: `price` y `total` son `Decimal(10,2)` en BD para precisión financiera. En frontend se manejan como `number` y se formatean, y en servicios se normaliza el total a 2 decimales para evitar errores por punto flotante.
-- Reglas de negocio en service: `availableSpots <= capacity` y validación de cupos al comprar viven en `TourService`/`TicketService` para garantizar consistencia incluso si cambian los clientes.
+Si al editar un tour no se sube una nueva imagen, se conserva la existente para no dejarlo sin foto.
 
-## Almacenamiento de imágenes
+### Validaciones y experiencia de usuario
 
-- Cloudinary vs disco local: se eligió Cloudinary para evitar servir archivos desde el servidor, simplificar CDN/caching y reducir responsabilidad de almacenamiento local. La carpeta `public/uploads/` queda como alternativa futura.
-- Subida por stream (`upload_stream` + `streamifier`): evita cargar la imagen completa en memoria y es más eficiente para archivos grandes.
-- Validaciones de archivo: sólo `image/*` y tamaño ≤ 25MB para mejorar seguridad y UX.
+- **Validación doble (frontend + backend):**
+  - Frontend con react-hook-form para mejorar la UX, aunque también incluí validaciones manuales para mostrar ambas formas de manejo de formularios.
+  - Backend como fuente de verdad (en `TicketService` y `TourService`) para garantizar consistencia.
+- **DTOs y `AppError`:** definen contratos de datos claros y centralizan el manejo de errores.
+- **SweetAlert2:** usado para confirmaciones y mensajes claros al usuario.
 
-## Diseño de la API
+### Diseño de API
 
-- Handlers por ruta en `src/app/api/*`: siguen convenciones del App Router. Los handlers delegan a controllers para mantener el código testable.
-- Rutas de tours admin: `/api/admin/tours` y `/api/admin/tours/[id]` agrupan CRUD administrativo. La obtención pública del tour está en `/api/tours/[id]`.
-- Tickets: se usó `POST /api/tickets/new` para distinguir el flujo de compra (simple y explícito).
-- Usuarios: búsqueda/creación por cédula simplifica el flujo de compra; el service `UserService.findOrCreate` elimina la necesidad de lógica duplicada.
-- Respuestas y errores: controllers capturan `AppError` y responden con el `status` adecuado. Esto evita filtrar mensajes internos y estandariza el contrato de error.
+- **Endpoints separados:**
+  - `/api/admin/tours` para CRUD administrativo.
+  - `/api/tickets/new` para el flujo de compra.
+- **Handlers en `src/app/api/*`:** aprovecha la estructura del App Router para mantener cercanía entre UI y lógica del servidor.
 
-## Flujo de compra y consistencia
+### Consistencia
 
-- Validación de cupos en backend: aunque el cliente limita la cantidad, la validación real esta en `TicketService` para prevenir inconsistencias.
-- Actualización de cupos tras compra: el service descuenta `availableSpots` inmediatamente después de crear el ticket.
-- Confirmación con modal (SweetAlert2): revisión final del total antes de continuar la compra y reduce compras por error.
+- La validación de cupos ocurre en el backend antes de crear el ticket.
+- Se descuenta `availableSpots` inmediatamente después de la compra.
+- En escenarios de alta concurrencia, se podría implementar transacciones o bloqueo optimista.
 
-## Estado y render en el frontend
+### Manejo de números y dinero
 
-- Páginas client-side (`"use client"`): las vistas clave usan estado/efectos, navegación del cliente y modales, por eso se marcan como cliente.
-- Estrategia de estado al cargar listas: en admin (`/admin/tours`) se usa `tours: Tour[] | null` para distinguir “cargando” (null) de “sin datos” ([]). En Home se usa `[]` + `loading: true` para un patrón clásico. Se muestran ambos enfoques a propósito.
-- Formateo de números: `toLocaleString()` para precio y totales, buscando legibilidad.
+- Normalizo el total a 2 decimales en el servicio.
+- En el cliente se muestra con `toLocaleString()` para mejor legibilidad.
 
-## Validación de formularios
+### Seguridad y configuración
 
-- Admin (crear/editar tour): `react-hook-form` usado para validaciones y mensajes claros.
-- Compra (BuyerForm): validación ligera manual (regex y longitudes). M
-- Doble validación (cliente + servidor).
+- Validaciones de tipo y tamaño de archivos antes de subirlos.
+- Variables sensibles en `.env`.
+- `AppError` evita exponer mensajes internos.
 
-## UX y feedback
+### Autenticación
 
-- SweetAlert2: confirmaciones y unificación de mensajes.
-- Componentización: `PurchaseSummary` y `BuyerForm` separan responsabilidades y se evita la contruccion de un solo componente muy grande `en Purchase`.
+Por ahora no incluí autenticación.  
+Quise enfocarme primero en el flujo principal que era lo solicitado (listar tours, comprar y generar tickets).
 
-## Seguridad y configuración
+### Migraciones
 
-- Variables de entorno: credenciales y URLs sensibles no viven en el repositorio. Cloudinary se configura con `CLOUDINARY_*`.
-- Sin auth ni login: se priorizó la funcionalidad principal y detallada de los requisitos solicitados.
-- Validación de tipos de archivo y tamaño: mitiga riesgos al subir contenido.
+- Migraciones manejadas con Prisma (`migrate dev` y `migrate deploy`).
 
-## Alternativas consideradas
+## Notas finales
 
-- Almacenamiento local de imágenes: Inicialmente se hizo de forma local cargando las imagenes y por tema de despliegue lo migre a Cloudinary.
+- Preferí usar pocas librerías y solo las necesaria, por ejemplo, SweetAlert2 para manejar confirmaciones y alertas de forma más amigable sin tener que crear modales desde cero.

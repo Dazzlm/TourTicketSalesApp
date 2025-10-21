@@ -1,4 +1,5 @@
 import React from "react";
+import LoadingSpinner from "./LoadingSpinner";
 
 type Tour = {
   id: number;
@@ -23,8 +24,7 @@ export default function PurchaseSummary({
   fetching,
   total,
 }: Props) {
-  if (fetching)
-    return <p className="text-sm text-gray-500">Cargando resumen...</p>;
+  if (fetching) return <LoadingSpinner />;
   if (!tour)
     return <p className="text-sm text-gray-500">Tour no disponible.</p>;
 

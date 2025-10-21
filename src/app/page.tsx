@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 type Tour = {
   id: number;
@@ -51,9 +52,7 @@ export default function HomePage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500 text-center mt-10 text-lg">
-          Cargando tours...
-        </p>
+        <LoadingSpinner />
       ) : tours.length === 0 ? (
         <p className="text-gray-500 text-center mt-10 text-lg">
           No hay tours disponibles actualmente.
